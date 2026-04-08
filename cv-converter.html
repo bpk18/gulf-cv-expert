@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Convert CV to ATS Format | Gulf Job Expert</title>
+  <meta name="description" content="Convert your existing CV to ATS-approved format for Gulf jobs.">
+  
+  <!-- PDF Generation Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  
+  <style>
+    :root {
+      --primary: #0f4fa8;
+      --primary-dark: #0a2f6b;
+      --accent: #16a34a;
+      --accent-dark: #0f7e38;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --bg: #f8fafc;
+      --surface: #fff;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+
+    h1, h2, h3 {
+      color: var(--primary-dark);
+      line-height: 1.2;
+    }
+
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.6rem; }
+    h3 { font-size: 1.2rem; }
+
+    .container {
+      width: min(95%, 1140px);
+      margin: 0 auto;
+    }
+
+    /* HEADER */
+    .header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      padding: 1rem 0;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+      z-index: 100;
+    }
+
+    .header-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: var(--primary-dark);
+    }
+
+    .logo span {
+      color: var(--accent);
+    }
+
+    .back-btn {
+      padding: 0.6rem 1.2rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .back-btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    .main {
+      padding: 40px 0;
+    }
+
+    .section-title {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: var(--primary-dark);
+    }
+
+    .section-subtitle {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+    }
+
+    /* UPLOAD AREA */
+    .input-section {
+      background: var(--surface);
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      margin-bottom: 2rem;
+    }
+
+    .upload-area {
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      padding: 3rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 1.5rem;
+    }
+
+    .upload-area:hover {
+      border-color: var(--primary);
+      background: rgba(15, 79, 168, 0.05);
+    }
+
+    .upload-area.dragover {
+      border-color: var(--accent);
+      background: rgba(22, 163, 74, 0.05);
+    }
+
+    .upload-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .upload-text {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .upload-text strong {
+      color: var(--text-primary);
+    }
+
+    #fileInput {
+      display: none;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.95rem;
+    }
+
+    .btn-check {
+      background: var(--primary);
+      color: white;
+      width: 100%;
+      padding: 1rem;
+      font-size: 1rem;
+    }
+
+    .btn-check:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    .btn-download {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      margin-top: 1rem;
+    }
+
+    .btn-download:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+    }
+
+    .results-section {
+      display: none;
+    }
+
+    .results-section.show {
+      display: block;
+    }
+
+    .improvement-box {
+      background: linear-gradient(135deg, rgba(22, 163, 74, 0.1) 0%, rgba(22, 163, 74, 0.05) 100%);
+      border: 1px solid var(--accent);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      color: var(--accent-dark);
+    }
+
+    .improvement-box h3 {
+      margin-bottom: 1rem;
+      color: var(--accent-dark);
+    }
+
+    .improvement-list {
+      list-style: none;
+    }
+
+    .improvement-list li {
+      padding: 0.5rem 0;
+      border-bottom: 1px solid rgba(22, 163, 74, 0.2);
+    }
+
+    .improvement-list li:last-child {
+      border-bottom: none;
+    }
+
+    .improvement-list li::before {
+      content: "• ";
+      color: var(--accent);
+      font-weight: bold;
+      margin-right: 0.5rem;
+    }
+
+    /* PREVIEW SECTION */
+    .preview-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-top: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .preview-pane {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      min-height: 500px;
+      overflow-y: auto;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .preview-pane.original {
+      border-left: 4px solid var(--warning);
+    }
+
+    .preview-pane.converted {
+      border-left: 4px solid var(--accent);
+    }
+
+    .preview-pane h4 {
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .preview-pane.original h4 {
+      color: var(--warning);
+    }
+
+    .preview-pane.converted h4 {
+      color: var(--accent);
+    }
+
+    .preview-content {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: var(--text-primary);
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    @media (max-width: 1024px) {
+      .preview-section {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+    }
+
+    /* FOOTER */
+    footer {
+      background: linear-gradient(135deg, #0f4fa8 0%, #0a3a7a 100%);
+      color: white;
+      margin-top: 3rem;
+      padding: 2rem 0;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .footer-info p {
+      font-size: 0.9rem;
+      line-height: 1.5;
+      margin-top: 0.5rem;
+    }
+
+    .footer-info p:first-child {
+      margin-top: 0;
+    }
+
+    .footer-info a {
+      color: #fbbf24;
+      text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+      .section-title {
+        font-size: 1.5rem;
+      }
+
+      .upload-area {
+        padding: 2rem;
+      }
+
+      .footer-content {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <div class="header-inner">
+        <a href="cv-options.html" class="back-btn">← Back</a>
+        <div class="logo">
+          <span>Gulf</span> CV Converter
+        </div>
+        <div></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="main">
+    <div class="container">
+      <h1 class="section-title">Convert Your CV to ATS Format</h1>
+      <p class="section-subtitle">Upload your existing CV and we'll convert it to be ATS-friendly for Gulf jobs</p>
+
+      <div class="input-section">
+        <div class="upload-area" onclick="document.getElementById('fileInput').click()" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+          <div class="upload-icon">📄</div>
+          <div class="upload-text"><strong>Click to upload or drag & drop</strong></div>
+          <div class="upload-text"><small>PDF, DOC, DOCX or TXT files (max. 5MB)</small></div>
+        </div>
+        <input type="file" id="fileInput" accept=".pdf,.txt,.doc,.docx" onchange="handleFileUpload(event)">
+        <button class="btn btn-check" onclick="convertCV()">Convert My CV</button>
+      </div>
+
+      <div id="resultsSection" class="results-section">
+        <div class="improvement-box">
+          <h3>✅ Conversion Complete</h3>
+          <p style="margin-bottom: 1rem;">Your CV has been formatted to ATS standards. Here's what we improved:</p>
+          <ul class="improvement-list" id="improvementList"></ul>
+        </div>
+
+        <h2 style="margin-top: 2rem; margin-bottom: 1.5rem;">📊 Preview Comparison</h2>
+        <div class="preview-section">
+          <div class="preview-pane original">
+            <h4>📄 Original CV</h4>
+            <div class="preview-content" id="originalPreview">Loading...</div>
+          </div>
+          <div class="preview-pane converted">
+            <h4>✨ Converted (ATS Format)</h4>
+            <div class="preview-content" id="convertedPreview">Loading...</div>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 2rem;">
+          <button class="btn btn-download" onclick="downloadConvertedCV()">📥 Download Converted CV</button>
+          <button class="btn btn-check" style="margin-top: 1rem;" onclick="location.href='cv-options.html'">Start Over</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-info">
+          <p><strong style="color: #fbbf24;">🏢 IOC Global Services</strong></p>
+          <p style="font-size: 0.9rem; line-height: 1.5; margin-top: 0.5rem;">
+            📍 Bridge Square Complex, Bridge Rd, Balmatta, Mangaluru, Karnataka 575003<br>
+            📞 +91 8050010978 | 8660147830 | 8867711688<br>
+            📧 <a href="mailto:hr@theglobalservices.in">hr@theglobalservices.in</a>
+          </p>
+        </div>
+        <div style="text-align: right; font-size: 0.85rem;">
+          <p>&copy; 2026 <strong>Gulf</strong> CV Expert. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    let cvContent = '';
+    let convertedCVContent = '';
+    const improvements = [
+      'Formatted for ATS system compatibility',
+      'Removed special characters and formatting',
+      'Added Gulf location keywords',
+      'Optimized section headers',
+      'Standardized bullet points',
+      'Enhanced readability for both ATS and humans'
+    ];
+
+    function handleDragOver(e) {
+      e.preventDefault();
+      document.querySelector('.upload-area').classList.add('dragover');
+    }
+
+    function handleDragLeave(e) {
+      document.querySelector('.upload-area').classList.remove('dragover');
+    }
+
+    function handleDrop(e) {
+      e.preventDefault();
+      document.querySelector('.upload-area').classList.remove('dragover');
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        document.getElementById('fileInput').files = files;
+        handleFileUpload({ target: { files: files } });
+      }
+    }
+
+    function handleFileUpload(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+        if (fileSizeMB > 5) {
+          alert('File size too large. Please upload a file under 5MB.');
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        // Show loading state
+        document.querySelector('.btn-check').disabled = true;
+        document.querySelector('.btn-check').textContent = '⏳ Processing...';
+
+        fetch('http://localhost:3000/api/convert-cv', {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            cvContent = data.text;
+            alert(`✓ File "${file.name}" processed successfully!`);
+          } else {
+            alert('Error: ' + data.error);
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Error uploading file: ' + error.message);
+        })
+        .finally(() => {
+          document.querySelector('.btn-check').disabled = false;
+          document.querySelector('.btn-check').textContent = 'Convert My CV';
+        });
+      }
+    }
+
+    function convertCV() {
+      if (!cvContent) {
+        alert('Please upload a CV file first.');
+        return;
+      }
+
+      // Show loading
+      document.querySelector('.btn-check').disabled = true;
+      document.querySelector('.btn-check').textContent = '⏳ Converting...';
+
+      fetch('http://localhost:3000/api/convert-to-ats', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ text: cvContent })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          const improvementList = document.getElementById('improvementList');
+          improvementList.innerHTML = data.improvements.map(imp => `<li>${imp}</li>`).join('');
+          
+          // Generate converted CV by applying ATS formatting
+          convertedCVContent = generateATSFormat(cvContent);
+          
+          // Display previews
+          document.getElementById('originalPreview').textContent = cvContent;
+          document.getElementById('convertedPreview').textContent = convertedCVContent;
+          
+          document.getElementById('resultsSection').classList.add('show');
+          window.scrollTo({ top: document.getElementById('resultsSection').offsetTop - 100, behavior: 'smooth' });
+        } else {
+          alert('Error: ' + data.error);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Error converting CV: ' + error.message);
+      })
+      .finally(() => {
+        document.querySelector('.btn-check').disabled = false;
+        document.querySelector('.btn-check').textContent = 'Convert My CV';
+      });
+    }
+
+    function generateATSFormat(text) {
+      // Apply ATS formatting transformations
+      let formatted = text;
+      
+      // Add Gulf location keywords if not present
+      if (!formatted.includes('UAE') && !formatted.includes('Saudi') && !formatted.includes('Qatar')) {
+        formatted = 'Gulf REGION KEYWORDS: UAE | Saudi Arabia | Qatar | Bahrain | Kuwait | Oman\n\n' + formatted;
+      }
+      
+      // Standardize common formatting
+      formatted = formatted.replace(/[•◦○]/g, '-'); // Normalize bullet points
+      formatted = formatted.replace(/\*\*/g, ''); // Remove bold markers
+      formatted = formatted.replace(/[_~`]/g, ''); // Remove special formatting
+      
+      // Restructure sections with clear headers
+      formatted = formatted.replace(/SUMMARY|Profile|Bio|About/gi, 'PROFESSIONAL SUMMARY');
+      formatted = formatted.replace(/EXPERIENCE|Work|Employment/gi, 'PROFESSIONAL EXPERIENCE');
+      formatted = formatted.replace(/EDUCATION|Qualification|Degree/gi, 'EDUCATION');
+      formatted = formatted.replace(/SKILLS|Expertise|Abilities/gi, 'CORE COMPETENCIES');
+      formatted = formatted.replace(/CERTIFICATION|Awards|Achievement/gi, 'CERTIFICATIONS AND AWARDS');
+      
+      // Add line breaks between sections
+      formatted = formatted.replace(/^(PROFESSIONAL|EDUCATION|CORE|CERTIFICATIONS)/gm, '\n$1');
+      
+      // Clean up extra whitespace
+      formatted = formatted.replace(/\n{3,}/g, '\n\n');
+      formatted = formatted.trim();
+      
+      return formatted;
+    }
+
+    function downloadConvertedCV() {
+      if (!cvContent) {
+        alert('No CV content to download');
+        return;
+      }
+
+      // Generate PDF via backend
+      fetch('http://localhost:3000/api/generate-pdf', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          cvData: {
+            personal: {
+              name: 'Converted CV',
+              email: '',
+              phone: '',
+              location: 'Gulf',
+              title: 'Professional',
+              summary: convertedCVContent || cvContent
+            },
+            experience: [],
+            education: []
+          },
+          fileName: 'Converted_ATS_CV',
+          selectedTemplate: 1
+        })
+      })
+      .then(response => response.blob())
+      .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Converted_ATS_CV.pdf';
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+        alert('✓ Your converted CV has been downloaded as PDF!');
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Error generating PDF: ' + error.message);
+      });
+    }
+  </script>
+</body>
+</html>

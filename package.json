@@ -1,0 +1,40 @@
+{
+  "name": "gulf-cv-expert",
+  "version": "1.0.0",
+  "description": "Gulf CV Expert - Professional ATS CV Builder and Converter",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "setup": "npm install && node -e \"const fs=require('fs');if(!fs.existsSync('.env')){fs.writeFileSync('.env','PORT=3000\\nNODE_ENV=development')}\""
+  },
+  "keywords": [
+    "cv",
+    "resume",
+    "ats",
+    "gulf",
+    "recruitment",
+    "job",
+    "uae",
+    "saudi",
+    "qatar"
+  ],
+  "author": "IOC Global Services",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "mammoth": "^1.5.1",
+    "multer": "^1.4.5-lts.1",
+    "pdf-parse": "^1.1.1",
+    "pdfkit": "^0.13.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
+

@@ -1,0 +1,1405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free ATS Score Checker | Gulf Job Expert</title>
+  <meta name="description" content="Get your CV scored instantly with our free ATS checker. See what's working and what needs fixing.">
+  <style>
+    :root {
+      --primary: #0f4fa8;
+      --primary-dark: #0a2f6b;
+      --accent: #16a34a;
+      --accent-dark: #0f7e38;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --bg: #f8fafc;
+      --surface: #fff;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+
+    h1, h2, h3 {
+      color: var(--primary-dark);
+      line-height: 1.2;
+    }
+
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.6rem; }
+    h3 { font-size: 1.2rem; }
+
+    .container {
+      width: min(95%, 1140px);
+      margin: 0 auto;
+    }
+
+    /* HEADER */
+    .header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      sticky: top;
+      padding: 1rem 0;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+    }
+
+    .header-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: var(--primary-dark);
+    }
+
+    .logo span {
+      color: var(--accent);
+    }
+
+    .back-btn {
+      padding: 0.6rem 1.2rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .back-btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    /* MAIN CONTENT */
+    .main {
+      padding: 60px 0;
+    }
+
+    .section-title {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .section-subtitle {
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto 2rem;
+    }
+
+    /* INPUT SECTION */
+    .input-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .tab-btn {
+      padding: 0.8rem 1.5rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-weight: 700;
+      color: var(--text-muted);
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s ease;
+      font-size: 0.95rem;
+    }
+
+    .tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .upload-area {
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      padding: 3rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .upload-area:hover {
+      border-color: var(--primary);
+      background: rgba(15, 79, 168, 0.02);
+    }
+
+    .upload-area.dragover {
+      border-color: var(--accent);
+      background: rgba(22, 163, 74, 0.05);
+    }
+
+    .upload-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    .upload-text {
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+    }
+
+    .upload-text small {
+      display: block;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+    }
+
+    #fileInput {
+      display: none;
+    }
+
+    textarea {
+      width: 100%;
+      height: 300px;
+      padding: 1rem;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      resize: vertical;
+      transition: all 0.3s ease;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(15, 79, 168, 0.1);
+    }
+
+    .btn-check {
+      width: 100%;
+      padding: 1rem;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .btn-check:hover {
+      background: var(--accent-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(22, 163, 74, 0.25);
+    }
+
+    .btn-check:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* RESULTS SECTION */
+    .results-section {
+      display: none;
+      animation: slideIn 0.5s ease;
+    }
+
+    .results-section.show {
+      display: block;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* SCORE DISPLAY */
+    .score-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .score-circle {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .score-gauge {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: conic-gradient(var(--accent) 0deg, var(--accent) var(--score-angle, 0deg), var(--border) var(--score-angle, 0deg) 360deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 8px 24px rgba(22, 163, 74, 0.15);
+    }
+
+    .gauge-inner {
+      width: 180px;
+      height: 180px;
+      background: var(--surface);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    .score-value {
+      font-size: 3rem;
+      font-weight: 900;
+      color: var(--primary-dark);
+    }
+
+    .score-text {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .score-badge {
+      display: inline-block;
+      padding: 0.6rem 1.2rem;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-top: 1rem;
+    }
+
+    .badge-good { background: rgba(22, 163, 74, 0.1); color: var(--accent-dark); }
+    .badge-ok { background: rgba(245, 158, 11, 0.1); color: #b45309; }
+    .badge-poor { background: rgba(239, 68, 68, 0.1); color: #991b1b; }
+
+    /* PREVIEW SECTION */
+    .preview-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      display: none;
+    }
+
+    .preview-section h3 {
+      margin-bottom: 1.5rem;
+    }
+
+    .upload-success {
+      background: linear-gradient(135deg, rgba(22, 163, 74, 0.1) 0%, rgba(22, 163, 74, 0.05) 100%);
+      border: 1.5px solid var(--accent);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      color: var(--accent-dark);
+      font-weight: 600;
+      display: none;
+      align-items: center;
+      gap: 1rem;
+      animation: slideIn 0.4s ease;
+    }
+
+    .upload-success.show {
+      display: flex;
+    }
+
+    .upload-success-icon {
+      font-size: 1.5rem;
+    }
+
+    .upload-success-text {
+      flex: 1;
+    }
+
+    .highlighted-text {
+      background: #f1f5f9;
+      padding: 1.5rem;
+      border-radius: 10px;
+      line-height: 2;
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+    }
+
+    .highlight-positive {
+      background: rgba(22, 163, 74, 0.2);
+      color: var(--accent-dark);
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .highlight-negative {
+      background: rgba(239, 68, 68, 0.2);
+      color: #991b1b;
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      font-weight: 600;
+      text-decoration: underline wavy #ef4444;
+    }
+
+    /* ANALYSIS SECTION */
+    .analysis-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .analysis-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+
+    .analysis-box h4 {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.2rem;
+      font-size: 1.1rem;
+    }
+
+    .analysis-list {
+      list-style: none;
+    }
+
+    .analysis-list li {
+      display: flex;
+      gap: 0.8rem;
+      margin-bottom: 1rem;
+      padding-bottom: 0.8rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.95rem;
+    }
+
+    .analysis-list li:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .analysis-icon {
+      font-size: 1.2rem;
+      min-width: 24px;
+    }
+
+    /* DETAILED REPORT */
+    .detailed-report {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 2rem;
+    }
+
+    .detailed-report h3 {
+      margin-bottom: 1.5rem;
+    }
+
+    .report-item {
+      margin-bottom: 2rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .report-item:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    .report-title {
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .report-desc {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+
+    .report-suggestion {
+      background: rgba(22, 163, 74, 0.05);
+      border-left: 3px solid var(--accent);
+      padding: 1rem;
+      border-radius: 6px;
+      margin-top: 0.8rem;
+      font-size: 0.9rem;
+    }
+
+    /* CTA */
+    .cta-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 0.8rem 2rem;
+      border: none;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.95rem;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-dark);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    .btn-accent {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+      color: white;
+      font-weight: 700;
+    }
+
+    .btn-accent:hover {
+      background: linear-gradient(135deg, var(--accent-dark) 0%, #0c5a2a 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .section-title { font-size: 1.5rem; }
+      .section-subtitle { font-size: 0.9rem; margin-bottom: 1.5rem; }
+
+      .header {
+        padding: 0.8rem 0;
+      }
+
+      .header-inner {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.8rem;
+      }
+
+      .logo {
+        font-size: 1.1rem;
+      }
+
+      .back-btn {
+        width: 100%;
+        text-align: center;
+        padding: 0.7rem 1rem;
+        font-size: 0.9rem;
+      }
+
+      .main {
+        padding: 40px 0;
+      }
+
+      .input-section {
+        padding: 1.5rem;
+      }
+
+      .tabs {
+        gap: 0.5rem;
+        margin-bottom: 1.2rem;
+      }
+
+      .tab-btn {
+        padding: 0.6rem 1rem;
+        font-size: 0.85rem;
+      }
+
+      .upload-area {
+        padding: 2rem;
+      }
+
+      .upload-icon {
+        font-size: 2.5rem;
+      }
+
+      textarea {
+        height: 250px;
+        font-size: 0.85rem;
+      }
+
+      .btn-check {
+        padding: 0.85rem;
+        font-size: 0.9rem;
+      }
+
+      .score-container {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .score-gauge {
+        width: 140px;
+        height: 140px;
+      }
+
+      .gauge-inner {
+        width: 125px;
+        height: 125px;
+      }
+
+      .score-value {
+        font-size: 1.8rem;
+      }
+
+      .analysis-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .analysis-box {
+        padding: 1.2rem;
+      }
+
+      .analysis-box h4 {
+        font-size: 1rem;
+      }
+
+      .analysis-list li {
+        font-size: 0.85rem;
+        margin-bottom: 0.6rem;
+      }
+
+      .detailed-report {
+        padding: 1.5rem;
+      }
+
+      .detailed-report h3 {
+        font-size: 1.2rem;
+      }
+
+      .report-item {
+        margin-bottom: 1.5rem;
+        padding-bottom: 1.5rem;
+      }
+
+      .report-title {
+        font-size: 0.95rem;
+      }
+
+      .report-desc {
+        font-size: 0.9rem;
+      }
+
+      .report-suggestion {
+        padding: 0.8rem;
+        font-size: 0.85rem;
+      }
+
+      .cta-buttons {
+        flex-direction: column;
+        gap: 0.8rem;
+      }
+
+      .btn {
+        padding: 0.7rem 1.5rem;
+        font-size: 0.9rem;
+      }
+
+      .upload-success {
+        padding: 1rem;
+        font-size: 0.9rem;
+      }
+
+      .upload-success-icon {
+        font-size: 1.2rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      h1 { font-size: 1.3rem; }
+      h2 { font-size: 1.1rem; }
+      h3 { font-size: 0.95rem; }
+
+      .section-title { font-size: 1.3rem; }
+      .section-subtitle { font-size: 0.85rem; margin-bottom: 1rem; }
+
+      .header {
+        padding: 0.6rem 0;
+      }
+
+      .logo {
+        font-size: 0.95rem;
+      }
+
+      .back-btn {
+        padding: 0.6rem 0.9rem;
+        font-size: 0.8rem;
+      }
+
+      .main {
+        padding: 30px 0;
+      }
+
+      .input-section {
+        padding: 1.2rem;
+        border-radius: 12px;
+      }
+
+      .tabs {
+        gap: 0.3rem;
+      }
+
+      .tab-btn {
+        padding: 0.5rem 0.8rem;
+        font-size: 0.75rem;
+      }
+
+      .upload-area {
+        padding: 1.5rem;
+      }
+
+      .upload-icon {
+        font-size: 2rem;
+      }
+
+      .upload-text {
+        font-size: 0.85rem;
+      }
+
+      .upload-text small {
+        font-size: 0.75rem;
+      }
+
+      textarea {
+        height: 200px;
+        padding: 0.8rem;
+        font-size: 0.8rem;
+        border-radius: 8px;
+      }
+
+      .btn-check {
+        padding: 0.75rem;
+        font-size: 0.85rem;
+        margin-top: 0.8rem;
+      }
+
+      .score-container {
+        gap: 1.2rem;
+      }
+
+      .score-gauge {
+        width: 120px;
+        height: 120px;
+      }
+
+      .gauge-inner {
+        width: 108px;
+        height: 108px;
+      }
+
+      .score-value {
+        font-size: 1.5rem;
+      }
+
+      .score-text {
+        font-size: 0.75rem;
+      }
+
+      .score-badge {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+      }
+
+      .analysis-box {
+        padding: 1rem;
+      }
+
+      .analysis-box h4 {
+        font-size: 0.95rem;
+        margin-bottom: 0.8rem;
+      }
+
+      .analysis-list li {
+        font-size: 0.8rem;
+        gap: 0.6rem;
+      }
+
+      .analysis-icon {
+        font-size: 1rem;
+      }
+
+      .detailed-report {
+        padding: 1.2rem;
+      }
+
+      .detailed-report h3 {
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+      }
+
+      .report-item {
+        margin-bottom: 1.2rem;
+        padding-bottom: 1.2rem;
+      }
+
+      .report-title {
+        font-size: 0.9rem;
+        margin-bottom: 0.4rem;
+      }
+
+      .report-desc {
+        font-size: 0.85rem;
+        line-height: 1.6;
+      }
+
+      .report-suggestion {
+        padding: 0.7rem;
+        font-size: 0.8rem;
+        border-radius: 6px;
+      }
+
+      .cta-buttons {
+        flex-direction: column;
+        gap: 0.6rem;
+        margin-top: 1.2rem;
+      }
+
+      .btn {
+        padding: 0.65rem 1.2rem;
+        font-size: 0.85rem;
+        border-radius: 8px;
+      }
+
+      .upload-success {
+        padding: 0.9rem;
+        font-size: 0.8rem;
+        gap: 0.6rem;
+        margin-bottom: 1rem;
+      }
+
+      .upload-success-icon {
+        font-size: 1.1rem;
+        min-width: 20px;
+      }
+
+      .upload-success-text {
+        font-size: 0.8rem;
+      }
+    }
+
+    @media (max-width: 360px) {
+      h1 { font-size: 1.1rem; }
+
+      .logo {
+        font-size: 0.9rem;
+      }
+
+      .back-btn {
+        font-size: 0.75rem;
+        padding: 0.5rem 0.8rem;
+      }
+
+      .section-title { font-size: 1.1rem; }
+
+      .input-section {
+        padding: 1rem;
+      }
+
+      .tab-btn {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.7rem;
+      }
+
+      .btn-check {
+        font-size: 0.8rem;
+        padding: 0.65rem;
+      }
+
+      .score-gauge {
+        width: 100px;
+        height: 100px;
+      }
+
+      .gauge-inner {
+        width: 90px;
+        height: 90px;
+      }
+
+      .score-value {
+        font-size: 1.3rem;
+      }
+
+      .btn {
+        font-size: 0.8rem;
+        padding: 0.6rem 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- HEADER -->
+  <header class="header">
+    <div class="container">
+      <div class="header-inner">
+        <div class="logo"><strong>Gulf</strong><span> Job</span> Expert</div>
+        <a href="index.html" class="back-btn">← Back to Home</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <div class="main">
+    <div class="container">
+      <h1 class="section-title">Free ATS Score Checker</h1>
+      <p class="section-subtitle">Get your CV scored instantly. See what's working, what needs fixing, and get recommendations to pass ATS systems.</p>
+
+      <!-- INPUT SECTION -->
+      <div class="input-section">
+        <div class="tabs">
+          <button class="tab-btn active" onclick="switchTab('upload')">📁 Upload CV</button>
+          <button class="tab-btn" onclick="switchTab('paste')">📝 Paste Text</button>
+        </div>
+
+        <!-- Upload Tab -->
+        <div id="upload" class="tab-content active">
+          <div class="upload-area" onclick="document.getElementById('fileInput').click()" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+            <div class="upload-icon">📄</div>
+            <div class="upload-text"><strong>Click to upload or drag & drop</strong></div>
+            <div class="upload-text"><small>PDF or TXT files (max. 5MB)</small></div>
+          </div>
+          <input type="file" id="fileInput" accept=".pdf,.txt,.doc,.docx" onchange="handleFileUpload(event)">
+          <button class="btn-check" onclick="analyzeCV()">Check ATS Score</button>
+        </div>
+
+        <!-- Paste Tab -->
+        <div id="paste" class="tab-content">
+          <textarea id="cvText" placeholder="Paste your CV text here..."></textarea>
+          <button class="btn-check" onclick="analyzeCV()">Check ATS Score</button>
+        </div>
+
+        <!-- Upload Success Message -->
+        <div id="uploadSuccess" class="upload-success">
+          <div class="upload-success-icon">✅</div>
+          <div class="upload-success-text">
+            <strong id="uploadFileName"></strong> uploaded successfully! Click "Check ATS Score" to analyze.
+          </div>
+        </div>
+      </div>
+
+      <!-- RESULTS SECTION -->
+      <div id="resultsSection" class="results-section">
+        <!-- Score Display -->
+        <div class="score-container">
+          <div class="score-circle">
+            <div class="score-gauge" style="--score-angle: calc(180deg * var(--score) / 100);">
+              <div class="gauge-inner">
+                <div class="score-value" id="scoreValue">0</div>
+                <div class="score-text">/ 100</div>
+              </div>
+            </div>
+            <div id="scoreBadge" class="score-badge"></div>
+          </div>
+
+          <div style="display: flex; flex-direction: column; justify-content: center;">
+            <h3>Your ATS Score Breakdown</h3>
+            <div style="margin-top: 1.5rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <span>Format & Structure</span>
+                <div style="width: 60%; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden;">
+                  <div id="bar1" style="height: 100%; background: var(--accent); width: 0%; transition: width 0.5s ease;"></div>
+                </div>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <span>Keywords & Skills</span>
+                <div style="width: 60%; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden;">
+                  <div id="bar2" style="height: 100%; background: var(--accent); width: 0%; transition: width 0.5s ease;"></div>
+                </div>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <span>Content Quality</span>
+                <div style="width: 60%; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden;">
+                  <div id="bar3" style="height: 100%; background: var(--accent); width: 0%; transition: width 0.5s ease;"></div>
+                </div>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span>ATS Compatibility</span>
+                <div style="width: 60%; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden;">
+                  <div id="bar4" style="height: 100%; background: var(--accent); width: 0%; transition: width 0.5s ease;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Analysis Boxes -->
+        <div class="analysis-grid">
+          <!-- Positives -->
+          <div class="analysis-box">
+            <h4>✅ What's Working Well</h4>
+            <ul class="analysis-list" id="positivesList"></ul>
+          </div>
+
+          <!-- Negatives -->
+          <div class="analysis-box">
+            <h4>❌ What Needs Fixing</h4>
+            <ul class="analysis-list" id="negativesList"></ul>
+          </div>
+        </div>
+
+        <!-- Preview Section -->
+        <div class="preview-section">
+          <h3>Sample: Highlighted Analysis</h3>
+          <div class="highlighted-text" id="highlightedPreview"></div>
+        </div>
+
+        <!-- Detailed Report -->
+        <div class="detailed-report">
+          <h3>📋 Detailed Recommendations</h3>
+          <div id="detailedReport"></div>
+        </div>
+
+        <!-- CTA Buttons -->
+        <div class="cta-buttons">
+          <a href="cv-options.html" class="btn btn-accent">Create ATS CV Now</a>
+          <a href="https://wa.me/918660147830?text=I%20need%20help%20improving%20my%20CV%20for%20Gulf%20jobs" target="_blank" class="btn btn-primary"><img src="whatsapp-logo.png" alt="WhatsApp" width="18" height="18" style="vertical-align: middle; margin-right: 8px; display: inline-block;"> Get Professional Help</a>
+          <button class="btn btn-secondary" onclick="resetChecker()">🔄 Check Another CV</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentScore = 0;
+    let cvContent = '';
+
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById(tab).classList.add('active');
+      document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add('active');
+    }
+
+    function handleDragOver(e) {
+      e.preventDefault();
+      document.querySelector('.upload-area').classList.add('dragover');
+    }
+
+    function handleDragLeave(e) {
+      document.querySelector('.upload-area').classList.remove('dragover');
+    }
+
+    function handleDrop(e) {
+      e.preventDefault();
+      document.querySelector('.upload-area').classList.remove('dragover');
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        document.getElementById('fileInput').files = files;
+        handleFileUpload({ target: { files: files } });
+      }
+    }
+
+    function handleFileUpload(e) {
+      const file = e.target.files[0];
+      if (file) {
+        // Show file size validation
+        const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+        if (fileSizeMB > 5) {
+          alert('File size too large. Please upload a file under 5MB.');
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          cvContent = event.target.result;
+          // Automatically analyze CV after upload
+          analyzeCV();
+        };
+        reader.readAsText(file);
+      }
+    }
+
+    function analyzeCV() {
+      const pasteContent = document.getElementById('cvText').value.trim();
+      const contentToAnalyze = cvContent || pasteContent;
+
+      if (!contentToAnalyze) {
+        alert('Please upload a file or paste CV content.');
+        return;
+      }
+
+      // Simulate analysis
+      performAnalysis(contentToAnalyze);
+    }
+
+    function performAnalysis(text) {
+      const lowerText = text.toLowerCase();
+      const lines = text.split('\n');
+      const bulletLines = lines.filter(l => l.trim().startsWith('•') || l.trim().startsWith('-') || l.trim().startsWith('*')).length;
+      
+      // Initialize scores
+      let formatScore = 40;
+      let keywordScore = 40;
+      let contentScore = 40;
+      let compatScore = 40;
+
+      // ===== PREMIUM FORMAT & STRUCTURE SCORING =====
+      // 1. Required sections detection
+      const sections = {
+        summary: lowerText.includes('summary') || lowerText.includes('profile') || lowerText.includes('professional summary'),
+        experience: lowerText.includes('experience') || lowerText.includes('work history') || lowerText.includes('professional experience'),
+        skills: lowerText.includes('skills') || lowerText.includes('competencies') || lowerText.includes('core competencies'),
+        education: lowerText.includes('education') || lowerText.includes('qualification') || lowerText.includes('academic'),
+        contact: lowerText.includes('contact') || lowerText.includes('email') || lowerText.includes('phone')
+      };
+      
+      let sectionsFound = Object.values(sections).filter(v => v).length;
+      formatScore += sectionsFound * 8;
+      
+      // 2. Proper formatting quality
+      if (bulletLines >= 15) formatScore += 12;
+      else if (bulletLines >= 8) formatScore += 8;
+      else if (bulletLines >= 3) formatScore += 3;
+      
+      if (lines.length > 30) formatScore += 8;
+      if (text.includes('\n\n') || text.includes('\n\n\n')) formatScore += 5;
+      
+      // 3. Length scoring (sweet spot: 500-1200 words)
+      if (text.length >= 500 && text.length <= 1200) formatScore += 15;
+      else if (text.length >= 300 && text.length < 500) formatScore += 8;
+      else if (text.length > 1200 && text.length <= 1800) formatScore += 10;
+      
+      // 4. Spacing and readability
+      if (lines.length > 20 && lines.length < 80) formatScore += 5;
+      
+      // 5. Penalties for poor formatting
+      if (text.includes('<') || text.includes('>') || text.includes('[') || text.includes(']')) formatScore -= 12;
+      if (text.toLowerCase().includes('photo') || text.toLowerCase().includes('attached')) formatScore -= 10;
+      if (text.includes('|---') || text.match(/\|.+\|/)) formatScore -= 15;
+      if (text.length < 250) formatScore -= 20;
+      if (bulletLines === 0 && text.length > 500) formatScore -= 8;
+      
+      // ===== ADVANCED KEYWORD & GULF JOB SCORING =====
+      let keywordMatches = 0;
+      
+      // Gulf locations (high priority)
+      const gulfLocations = ['dubai', 'uae', 'abu dhabi', 'saudi', 'riyadh', 'qatar', 'doha', 'bahrain', 'manama', 'kuwait', 'oman', 'muscat'];
+      gulfLocations.forEach(loc => {
+        if (lowerText.includes(loc)) keywordMatches += 4;
+      });
+      
+      // Industry-specific keywords (Gulf market focus)
+      const industryKeywords = {
+        'retail': 3, 'sales': 3, 'customer service': 4, 'warehouse': 3, 'logistics': 3,
+        'hospitality': 3, 'hotel': 3, 'manager': 2, 'supervisor': 2, 'executive': 2,
+        'sales associate': 4, 'sales executive': 4, 'store manager': 4, 'team lead': 3,
+        'pos': 3, 'inventory': 2, 'excel': 2, 'word': 1, 'crm': 3, 'erp': 3,
+        'customer support': 3, 'business development': 3, 'accounts': 2, 'administration': 2
+      };
+      
+      for (const [keyword, points] of Object.entries(industryKeywords)) {
+        if (lowerText.includes(keyword)) keywordMatches += points;
+      }
+      
+      // Technical tools & certifications
+      const techKeywords = ['microsoft', 'google', 'salesforce', 'sap', 'oracle', 'aws', 'certified', 'diploma', 'degree'];
+      techKeywords.forEach(tech => {
+        if (lowerText.includes(tech)) keywordMatches += 2;
+      });
+      
+      keywordScore = 40 + Math.min(keywordMatches * 1.5, 50);
+      
+      // ===== PREMIUM CONTENT QUALITY SCORING =====
+      let contentPoints = 0;
+      
+      // 1. Action verbs (comprehensive list)
+      const actionVerbs = {
+        'achieved': 2, 'increased': 2, 'improved': 2, 'exceeded': 2, 'managed': 1.5, 'led': 1.5,
+        'implemented': 2, 'created': 2, 'developed': 1.5, 'enhanced': 2, 'launched': 2, 'established': 2,
+        'streamlined': 2, 'optimized': 2, 'reduced': 2, 'expanded': 2, 'coordinated': 1.5,
+        'directed': 1.5, 'executed': 2, 'generated': 2, 'initiated': 2, 'organized': 1.5,
+        'strategized': 2, 'transformed': 2, 'spearheaded': 2, 'pioneered': 2, 'resolved': 2
+      };
+      
+      let verbScore = 0;
+      for (const [verb, points] of Object.entries(actionVerbs)) {
+        let count = (lowerText.match(new RegExp(verb, 'g')) || []).length;
+        verbScore += count * points;
+      }
+      contentPoints += Math.min(verbScore, 30);
+      
+      // 2. Quantifiable metrics (numbers, percentages, metrics)
+      const metrics = text.match(/\d+%|\d+\+|₹\d+|[\d,]+\s*(sales|revenue|customers|team|goal)/gi) || [];
+      contentPoints += Math.min(metrics.length * 4, 25);
+      
+      // 3. Bullet point quality
+      if (bulletLines >= 20) contentPoints += 12;
+      else if (bulletLines >= 15) contentPoints += 9;
+      else if (bulletLines >= 10) contentPoints += 6;
+      else if (bulletLines >= 5) contentPoints += 3;
+      else if (bulletLines === 0) contentPoints -= 10;
+      
+      // 4. Experience timeline indication
+      const yearMatches = (lowerText.match(/\d{4}|present|current|year|month|ongoing/g) || []).length;
+      if (yearMatches >= 5) contentPoints += 10;
+      else if (yearMatches >= 2) contentPoints += 5;
+      
+      // 5. Specific achievements and results
+      const achievementKeywords = ['result', 'outcome', 'success', 'award', 'recognition', 'promotion', 'performance'];
+      achievementKeywords.forEach(keyword => {
+        if (lowerText.includes(keyword)) contentPoints += 2;
+      });
+      
+      // 6. Responsibilities vs achievements balance
+      const responsibilities = (lowerText.match(/responsible for|duties|tasks/g) || []).length;
+      const achievements = (lowerText.match(/achieved|delivered|exceeded|contributed/g) || []).length;
+      if (achievements > responsibilities) contentPoints += 8;
+      
+      // 7. Educational background
+      const eduKeywords = ['bachelor', 'master', 'degree', 'diploma', 'certificate', 'university', 'college', 'institution'];
+      let eduMatches = 0;
+      eduKeywords.forEach(edu => {
+        if (lowerText.includes(edu)) eduMatches++;
+      });
+      if (eduMatches >= 2) contentPoints += 8;
+      else if (eduMatches >= 1) contentPoints += 4;
+      
+      contentScore = 40 + Math.min(contentPoints, 50);
+      
+      // ===== PREMIUM ATS COMPATIBILITY SCORING =====
+      let atsPoints = 0;
+      
+      // 1. Plain text format (critical)
+      if (!text.includes('<') && !text.includes('>')) atsPoints += 20;
+      if (!text.includes('[') && !text.includes('{')) atsPoints += 8;
+      
+      // 2. Font and encoding safety
+      const badFonts = ['arial black', 'comic sans', 'wingdings', 'symbol'];
+      const hasBadFont = badFonts.some(font => lowerText.includes(font));
+      if (!hasBadFont) atsPoints += 8;
+      
+      // 3. Contact information presence
+      const hasEmail = /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/gi.test(text);
+      const hasPhone = /[\d\s\-+()]{7,}/g.test(text);
+      if (hasEmail) atsPoints += 10;
+      if (hasPhone) atsPoints += 8;
+      
+      // 4. Professional links
+      if (lowerText.includes('linkedin')) atsPoints += 8;
+      if (lowerText.includes('github') || lowerText.includes('portfolio')) atsPoints += 5;
+      
+      // 5. Special characters issues (critical penalties)
+      const badChars = text.match(/™|®|©|†|‡|§|¶/g) || [];
+      if (badChars.length > 0) atsPoints -= badChars.length * 3;
+      
+      // 6. Proper line breaks and structure
+      if (lines.length > 20 && lines.length < 100) atsPoints += 8;
+      
+      // 7. No problematic formatting
+      if (!text.includes('\\t\\t') && !text.includes('\\n\\t')) atsPoints += 5;
+      if (!text.match(/\|.+\|/)) atsPoints += 8;
+      
+      compatScore = 40 + Math.min(atsPoints, 50);
+      
+      // ===== FINAL SCORING =====
+      formatScore = Math.min(100, Math.max(0, formatScore));
+      keywordScore = Math.min(100, Math.max(0, keywordScore));
+      contentScore = Math.min(100, Math.max(0, contentScore));
+      compatScore = Math.min(100, Math.max(0, compatScore));
+      
+      // Intelligent weighting based on Gulf job market requirements
+      const totalScore = Math.round((
+        formatScore * 0.15 + 
+        keywordScore * 0.35 + 
+        contentScore * 0.35 + 
+        compatScore * 0.15
+      ));
+      
+      displayResults(totalScore, formatScore, keywordScore, contentScore, compatScore, text);
+    }
+
+    function displayResults(total, format, keyword, content, compat, text) {
+      currentScore = total;
+
+      // Update score display
+      document.getElementById('scoreValue').textContent = total;
+      
+      // Update progress bars
+      setTimeout(() => {
+        document.getElementById('bar1').style.width = format + '%';
+        document.getElementById('bar2').style.width = keyword + '%';
+        document.getElementById('bar3').style.width = content + '%';
+        document.getElementById('bar4').style.width = compat + '%';
+      }, 100);
+
+      // Update badge
+      const badge = document.getElementById('scoreBadge');
+      if (total >= 80) {
+        badge.className = 'score-badge badge-good';
+        badge.textContent = '✅ Excellent! Ready for ATS';
+      } else if (total >= 60) {
+        badge.className = 'score-badge badge-ok';
+        badge.textContent = '⚠️ Good, but needs improvements';
+      } else {
+        badge.className = 'score-badge badge-poor';
+        badge.textContent = '❌ Needs significant improvements';
+      }
+
+      // Update gauge color
+      const gauge = document.querySelector('.score-gauge');
+      if (total >= 80) {
+        gauge.style.background = `conic-gradient(var(--accent) 0deg, var(--accent) calc(180deg * ${total} / 100), var(--border) calc(180deg * ${total} / 100) 360deg)`;
+      } else if (total >= 60) {
+        gauge.style.background = `conic-gradient(var(--warning) 0deg, var(--warning) calc(180deg * ${total} / 100), var(--border) calc(180deg * ${total} / 100) 360deg)`;
+      } else {
+        gauge.style.background = `conic-gradient(var(--danger) 0deg, var(--danger) calc(180deg * ${total} / 100), var(--border) calc(180deg * ${total} / 100) 360deg)`;
+      }
+
+      // Populate analysis
+      populateAnalysis(text, format, keyword, content, compat);
+
+      // Show results
+      document.getElementById('resultsSection').classList.add('show');
+      window.scrollTo({ top: document.querySelector('.results-section').offsetTop, behavior: 'smooth' });
+    }
+
+    function populateAnalysis(text, format, keyword, content, compat) {
+      // Positives
+      const positives = [];
+      if (format >= 80) positives.push('✓ Clean formatting suitable for ATS');
+      if (keyword >= 70) positives.push('✓ Good use of relevant keywords');
+      if (content >= 75) positives.push('✓ Strong content and descriptions');
+      if (text.toLowerCase().includes('achieved') || text.toLowerCase().includes('increased')) positives.push('✓ Uses action-oriented language');
+      if (text.includes('•') || text.includes('-')) positives.push('✓ Proper bullet points for readability');
+
+      // Negatives
+      const negatives = [];
+      if (format < 70) negatives.push('✗ Formatting issues detected');
+      if (keyword < 60) negatives.push('✗ Missing <strong>Gulf</strong> job keywords (UAE, Saudi, Qatar)');
+      if (content < 70) negatives.push('✗ Weak experience descriptions');
+      if (!text.toLowerCase().includes('experience')) negatives.push('✗ Missing clear Experience section');
+      if (text.includes('[') || text.includes('CONFIDENTIAL')) negatives.push('✗ Contains unsupported special characters');
+      if (text.length < 300) negatives.push('✗ Too short - needs more content');
+
+      const positivesHtml = positives.map(p => `<li>${p}</li>`).join('');
+      const negativesHtml = negatives.map(n => `<li>${n}</li>`).join('');
+
+      document.getElementById('positivesList').innerHTML = positivesHtml || '<li>No major issues detected!</li>';
+      document.getElementById('negativesList').innerHTML = negativesHtml || '<li>No issues found!</li>';
+
+      // Preview with highlights
+      let preview = text.substring(0, 400);
+      preview = preview.replace(/achieved|increased|exceeded|improved|implemented|led|managed/gi, match => `<span class="highlight-positive">${match}</span>`);
+      preview = preview.replace(/\[.*?\]|CONFIDENTIAL|photo/gi, match => `<span class="highlight-negative">${match}</span>`);
+      document.getElementById('highlightedPreview').innerHTML = preview + '...';
+
+      // Detailed report
+      const report = `
+        <div class="report-item">
+          <div class="report-title">📋 Format & Structure (${format}/100)</div>
+          <div class="report-desc">Your CV formatting is ${format >= 80 ? 'excellent' : format >= 60 ? 'good' : 'needs improvement'}. Ensure no tables, images, or special formatting that ATS can't read.</div>
+          ${format < 80 ? '<div class="report-suggestion">💡 Suggestion: Use simple text, bullets (•), and clean spacing. Avoid graphics, images, and colored text.</div>' : ''}
+        </div>
+        <div class="report-item">
+          <div class="report-title">🔑 Keywords & Skills (${keyword}/100)</div>
+          <div class="report-desc">Your CV contains ${keyword >= 70 ? 'good' : 'limited'} job-relevant keywords. Include <strong>Gulf</strong>-specific terms like UAE, Saudi Arabia, Qatar, and your job role keywords.</div>
+          ${keyword < 70 ? '<div class="report-suggestion">💡 Suggestion: Add keywords like "Customer Service", "Sales", "Retail", and your location preferences (Dubai, Abu Dhabi, Riyadh, etc.).</div>' : ''}
+        </div>
+        <div class="report-item">
+          <div class="report-title">📝 Content Quality (${content}/100)</div>
+          <div class="report-desc">Your CV content is ${content >= 75 ? 'strong' : 'needs improvement'}. Use action verbs and quantifiable achievements.</div>
+          ${content < 75 ? '<div class="report-suggestion">💡 Suggestion: Replace vague descriptions with specific achievements. Example: "Increased sales by 25%" instead of "Good at sales".</div>' : ''}
+        </div>
+        <div class="report-item">
+          <div class="report-title">🤖 ATS Compatibility (${compat}/100)</div>
+          <div class="report-desc">Your CV is ${compat >= 80 ? 'highly compatible' : compat >= 60 ? 'reasonably compatible' : 'poorly compatible'} with ATS systems.</div>
+          ${compat < 80 ? '<div class="report-suggestion">💡 Suggestion: Use standard fonts (Arial, Calibri), simple formatting, and plain text. Save as .docx or .pdf when submitting.</div>' : ''}
+        </div>
+      `;
+      document.getElementById('detailedReport').innerHTML = report;
+    }
+
+    function resetChecker() {
+      document.getElementById('cvText').value = '';
+      document.getElementById('fileInput').value = '';
+      document.getElementById('resultsSection').classList.remove('show');
+      document.getElementById('uploadSuccess').classList.remove('show');
+      cvContent = '';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  </script>
+
+  <!-- FOOTER -->
+  <footer style="background: linear-gradient(135deg, #0f4fa8 0%, #0a3a7a 100%); color: white; margin-top: 3rem; padding: 2rem 0; border-top: 1px solid rgba(255,255,255,0.1);">
+    <div style="max-width: 1140px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; gap: 2rem; flex-wrap: wrap;">
+      <div>
+        <p><strong style="color: #fbbf24;">🏢 IOC Global Services</strong></p>
+        <p style="font-size: 0.9rem; line-height: 1.5; margin-top: 0.5rem;">
+          📍 Bridge Square Complex, Bridge Rd, Balmatta, Mangaluru, Karnataka 575003<br>
+          📞 +91 8050010978 | 8660147830 | 8867711688<br>
+          📧 <a href="mailto:hr@theglobalservices.in" style="color: #fbbf24; text-decoration: underline;">hr@theglobalservices.in</a>
+        </p>
+      </div>
+      <div style="text-align: right; font-size: 0.85rem;">
+        <p>&copy; 2026 <strong>Gulf</strong> CV Expert. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

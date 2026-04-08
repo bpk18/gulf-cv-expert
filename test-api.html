@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Tester - Gulf CV Expert</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 30px;
+    }
+    .endpoint {
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      transition: all 0.3s;
+    }
+    .endpoint:hover {
+      border-color: #667eea;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+    }
+    .endpoint h2 {
+      color: #667eea;
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+    }
+    .method {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .post {
+      background: #4CAF50;
+      color: white;
+    }
+    .get {
+      background: #2196F3;
+      color: white;
+    }
+    .description {
+      color: #666;
+      margin-bottom: 15px;
+    }
+    .test-btn {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+    .test-btn:hover {
+      background: #764ba2;
+      transform: translateY(-2px);
+    }
+    .test-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    .result {
+      background: #f5f5f5;
+      border-left: 4px solid #667eea;
+      padding: 15px;
+      margin-top: 15px;
+      border-radius: 4px;
+      max-height: 300px;
+      overflow-y: auto;
+      display: none;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+    }
+    .result.show {
+      display: block;
+    }
+    .result.success {
+      border-left-color: #4CAF50;
+      background: #f1f8f4;
+    }
+    .result.error {
+      border-left-color: #f44336;
+      background: #fdf1f0;
+      color: #f44336;
+    }
+    .status {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+    .status.online {
+      background: #4CAF50;
+      animation: pulse 2s infinite;
+    }
+    .status.offline {
+      background: #f44336;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    .header-status {
+      text-align: center;
+      margin-bottom: 30px;
+      padding: 15px;
+      background: #f5f5f5;
+      border-radius: 8px;
+    }
+    .file-input-wrapper {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+    }
+    .file-input-wrapper input[type=file] {
+      position: absolute;
+      left: -9999px;
+    }
+    .file-input-label {
+      display: inline-block;
+      padding: 10px 20px;
+      background: #667eea;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+    .file-input-label:hover {
+      background: #764ba2;
+    }
+    pre {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧪 Gulf CV Expert - API Tester</h1>
+    <p class="subtitle">Test backend endpoints locally</p>
+
+    <div class="header-status">
+      <span class="status offline" id="statusIndicator"></span>
+      Server Status: <strong id="statusText">Checking...</strong>
+    </div>
+
+    <!-- Health Check -->
+    <div class="endpoint">
+      <span class="method get">GET</span>
+      <h2>/api/health</h2>
+      <p class="description">Check if backend server is running</p>
+      <button class="test-btn" onclick="testEndpoint('health')">Test Health Check</button>
+      <div class="result" id="result-health"></div>
+    </div>
+
+    <!-- Server Info -->
+    <div class="endpoint">
+      <span class="method get">GET</span>
+      <h2>/api/info</h2>
+      <p class="description">Get server info and list all available endpoints</p>
+      <button class="test-btn" onclick="testEndpoint('info')">Get Server Info</button>
+      <div class="result" id="result-info"></div>
+    </div>
+
+    <!-- File Upload -->
+    <div class="endpoint">
+      <span class="method post">POST</span>
+      <h2>/api/convert-cv</h2>
+      <p class="description">Upload CV file (PDF, DOCX, DOC, TXT) - Max 5MB</p>
+      <div class="file-input-wrapper">
+        <label class="file-input-label">Choose CV File</label>
+        <input type="file" id="cvFile" accept=".pdf,.docx,.doc,.txt" onchange="updateFileName()">
+      </div>
+      <span id="fileName" style="margin-left: 15px; color: #666;"></span>
+      <button class="test-btn" onclick="testUpload()" style="margin-top: 10px;">Upload & Parse</button>
+      <div class="result" id="result-upload"></div>
+    </div>
+
+    <!-- Convert to ATS -->
+    <div class="endpoint">
+      <span class="method post">POST</span>
+      <h2>/api/convert-to-ats</h2>
+      <p class="description">Convert CV text to ATS format</p>
+      <textarea id="atsInput" placeholder="Paste CV text here..." style="width: 100%; height: 100px; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-family: monospace;"></textarea>
+      <button class="test-btn" onclick="testATS()" style="margin-top: 10px;">Convert to ATS</button>
+      <div class="result" id="result-ats"></div>
+    </div>
+
+    <!-- Validate CV -->
+    <div class="endpoint">
+      <span class="method post">POST</span>
+      <h2>/api/validate-cv</h2>
+      <p class="description">Validate CV data structure</p>
+      <textarea id="validateInput" placeholder="Paste CV JSON data here..." style="width: 100%; height: 100px; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-family: monospace;">{"personal":{"name":"John Doe","email":"john@example.com","phone":"+91 9999999999"},"experience":[],"education":[]}</textarea>
+      <button class="test-btn" onclick="testValidate()" style="margin-top: 10px;">Validate CV</button>
+      <div class="result" id="result-validate"></div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = 'http://localhost:3000/api';
+
+    // Check server status on load
+    window.addEventListener('load', () => {
+      checkServerStatus();
+      setInterval(checkServerStatus, 5000);
+    });
+
+    function checkServerStatus() {
+      fetch(`${API_BASE}/health`)
+        .then(res => res.json())
+        .then(() => {
+          document.getElementById('statusIndicator').className = 'status online';
+          document.getElementById('statusText').textContent = 'Online ✓';
+        })
+        .catch(() => {
+          document.getElementById('statusIndicator').className = 'status offline';
+          document.getElementById('statusText').textContent = 'Offline ✗ (Make sure backend is running)';
+        });
+    }
+
+    function updateFileName() {
+      const file = document.getElementById('cvFile').files[0];
+      if (file) {
+        document.getElementById('fileName').textContent = `Selected: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+      }
+    }
+
+    function showResult(id, data, isSuccess = true) {
+      const element = document.getElementById(`result-${id}`);
+      element.textContent = JSON.stringify(data, null, 2);
+      element.className = `result show ${isSuccess ? 'success' : 'error'}`;
+    }
+
+    function testEndpoint(type) {
+      const btn = event.target;
+      btn.disabled = true;
+      btn.textContent = 'Loading...';
+
+      let url = `${API_BASE}/${type}`;
+
+      fetch(url)
+        .then(res => res.json())
+        .then(data => showResult(type, data, true))
+        .catch(err => showResult(type, { error: err.message }, false))
+        .finally(() => {
+          btn.disabled = false;
+          btn.textContent = `Test ${type === 'health' ? 'Health Check' : 'Server Info'}`;
+        });
+    }
+
+    function testUpload() {
+      const file = document.getElementById('cvFile').files[0];
+      if (!file) {
+        alert('Please select a file');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const btn = event.target;
+      btn.disabled = true;
+      btn.textContent = 'Uploading...';
+
+      fetch(`${API_BASE}/convert-cv`, {
+        method: 'POST',
+        body: formData
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.error) {
+            showResult('upload', data, false);
+          } else {
+            showResult('upload', data, true);
+          }
+        })
+        .catch(err => showResult('upload', { error: err.message }, false))
+        .finally(() => {
+          btn.disabled = false;
+          btn.textContent = 'Upload & Parse';
+        });
+    }
+
+    function testATS() {
+      const text = document.getElementById('atsInput').value;
+      if (!text.trim()) {
+        alert('Please enter CV text');
+        return;
+      }
+
+      const btn = event.target;
+      btn.disabled = true;
+      btn.textContent = 'Converting...';
+
+      fetch(`${API_BASE}/convert-to-ats`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text })
+      })
+        .then(res => res.json())
+        .then(data => showResult('ats', data, true))
+        .catch(err => showResult('ats', { error: err.message }, false))
+        .finally(() => {
+          btn.disabled = false;
+          btn.textContent = 'Convert to ATS';
+        });
+    }
+
+    function testValidate() {
+      const input = document.getElementById('validateInput').value;
+      if (!input.trim()) {
+        alert('Please enter CV data');
+        return;
+      }
+
+      try {
+        const cvData = JSON.parse(input);
+        const btn = event.target;
+        btn.disabled = true;
+        btn.textContent = 'Validating...';
+
+        fetch(`${API_BASE}/validate-cv`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ cvData })
+        })
+          .then(res => res.json())
+          .then(data => showResult('validate', data, data.valid))
+          .catch(err => showResult('validate', { error: err.message }, false))
+          .finally(() => {
+            btn.disabled = false;
+            btn.textContent = 'Validate CV';
+          });
+      } catch (err) {
+        showResult('validate', { error: 'Invalid JSON format' }, false);
+      }
+    }
+  </script>
+</body>
+</html>

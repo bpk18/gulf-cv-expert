@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Choose Your CV Service | Gulf Job Expert</title>
+  <meta name="description" content="Choose your preferred service - convert existing CV or create a new one.">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    :root {
+      --primary: #0f4fa8;
+      --primary-dark: #0a3a7a;
+      --accent: #16a34a;
+      --border: #e5e7eb;
+      --bg-light: #f9fafb;
+      --text-primary: #1f2937;
+      --text-secondary: #6b7280;
+      --text-muted: #9ca3af;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #f0f4f8 0%, #f8fafc 100%);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* HEADER */
+    header {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      padding: 1.5rem 0;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .logo strong {
+      color: var(--accent);
+    }
+
+    .back-btn {
+      padding: 0.6rem 1.2rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      font-size: 0.95rem;
+    }
+
+    .back-btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    /* MAIN CONTENT */
+    .main {
+      flex: 1;
+      padding: 60px 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .options-container {
+      width: 100%;
+      text-align: center;
+    }
+
+    .options-header {
+      margin-bottom: 3rem;
+    }
+
+    .options-header h1 {
+      font-size: 2.5rem;
+      color: var(--primary-dark);
+      margin-bottom: 0.5rem;
+    }
+
+    .options-header p {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+      gap: 2.5rem;
+      margin-top: 3rem;
+      max-width: 1000px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .option-card {
+      background: white;
+      border-radius: 16px;
+      padding: 3.5rem;
+      box-shadow: 0 2px 8px rgba(15, 79, 168, 0.1);
+      border: 2px solid var(--border);
+      transition: all 0.3s ease;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .option-card:hover {
+      border-color: var(--primary);
+      box-shadow: 0 8px 24px rgba(15, 79, 168, 0.15);
+      transform: translateY(-4px);
+    }
+
+    .option-card.popular {
+      border-color: var(--accent);
+      box-shadow: 0 8px 24px rgba(22, 163, 74, 0.15);
+    }
+
+    .option-card.popular:hover {
+      transform: translateY(-4px);
+    }
+
+    .badge {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--accent) 0%, #0f7e38 100%);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      width: fit-content;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .option-icon {
+      font-size: 4rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .option-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin-bottom: 1rem;
+    }
+
+    .option-description {
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+      flex: 1;
+      font-size: 1.05rem;
+      line-height: 1.6;
+    }
+
+    .option-features {
+      list-style: none;
+      margin-bottom: 2rem;
+      text-align: left;
+    }
+
+    .option-features li {
+      padding: 0.5rem 0;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .option-features li::before {
+      content: "✓ ";
+      color: var(--accent);
+      font-weight: 700;
+      margin-right: 0.5rem;
+    }
+
+    .option-btn {
+      display: inline-block;
+      padding: 1rem 2rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      margin-top: auto;
+    }
+
+    .option-btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(15, 79, 168, 0.3);
+    }
+
+    .option-card.popular .option-btn {
+      background: linear-gradient(135deg, var(--accent) 0%, #0f7e38 100%);
+    }
+
+    .option-card.popular .option-btn:hover {
+      background: linear-gradient(135deg, var(--accent) 0%, #0c5a2a 100%);
+    }
+
+    /* FOOTER */
+    footer {
+      background: linear-gradient(135deg, #0f4fa8 0%, #0a3a7a 100%);
+      color: white;
+      margin-top: auto;
+      padding: 2rem 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .footer-info {
+      text-align: left;
+    }
+
+    .footer-info p {
+      font-size: 0.9rem;
+      line-height: 1.5;
+      margin-top: 0.5rem;
+    }
+
+    .footer-info p:first-child {
+      margin-top: 0;
+    }
+
+    .footer-info strong {
+      color: #fbbf24;
+    }
+
+    .footer-info a {
+      color: #fbbf24;
+      text-decoration: underline;
+    }
+
+    .footer-right {
+      text-align: right;
+      font-size: 0.85rem;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .options-header h1 {
+        font-size: 1.8rem;
+      }
+
+      .options-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .footer-content {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .footer-info {
+        text-align: center;
+      }
+
+      .footer-right {
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- HEADER -->
+  <header>
+    <div class="container">
+      <div class="header-content">
+        <a href="index.html" class="back-btn">← Back to Home</a>
+        <div class="logo"><strong>Gulf</strong> CV Expert</div>
+        <div style="width: 120px;"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="container">
+      <div class="options-container">
+        <div class="options-header">
+          <h1>Choose Your Service</h1>
+          <p>Select the option that best fits your needs</p>
+        </div>
+
+        <div class="options-grid">
+          <!-- Option 1: Convert Old CV -->
+          <a href="cv-converter.html" style="text-decoration: none;">
+            <div class="option-card">
+              <div class="option-icon">🔄</div>
+              <div class="option-title">Convert Existing CV</div>
+              <p class="option-description">Have an old CV? Let us convert it to ATS-approved format optimized for <strong>Gulf</strong> jobs.</p>
+              <ul class="option-features">
+                <li>Upload your current CV</li>
+                <li>Instant ATS Score Check</li>
+                <li>Get specific improvements</li>
+                <li>Download optimized version</li>
+                <li>Fast results (same day)</li>
+              </ul>
+              <button class="option-btn">Start Conversion</button>
+            </div>
+          </a>
+
+          <!-- Option 2: Create New CV -->
+          <a href="cv-builder.html" style="text-decoration: none;">
+            <div class="option-card popular">
+              <div class="option-icon">✨</div>
+              <div class="option-title">Create New CV</div>
+              <p class="option-description">Start fresh with our step-by-step builder. Create a professional, ATS-friendly CV from scratch.</p>
+              <ul class="option-features">
+                <li>5-step easy builder</li>
+                <li>Professional templates</li>
+                <li>Gulf keywords included</li>
+                <li>24-48 hours delivery</li>
+                <li>Unlimited revisions</li>
+              </ul>
+              <button class="option-btn">Build New CV</button>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-info">
+          <p><strong>🏢 IOC Global Services</strong></p>
+          <p style="font-size: 0.9rem; line-height: 1.5; margin-top: 0.5rem;">
+            📍 Bridge Square Complex, Bridge Rd, Balmatta, Mangaluru, Karnataka 575003<br>
+            📞 +91 8050010978 | 8660147830 | 8867711688<br>
+            📧 <a href="mailto:hr@theglobalservices.in">hr@theglobalservices.in</a>
+          </p>
+        </div>
+        <div class="footer-right">
+          <p>&copy; 2026 <strong>Gulf</strong> CV Expert. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
