@@ -1155,6 +1155,216 @@
       max-height: 80vh;
       overflow-y: auto;
     }
+
+    /* Unified UI Refresh */
+    :root {
+      --bg-light: #f4f7fb;
+      --accent-dark: #0f7e38;
+      --surface-soft: rgba(255, 255, 255, 0.9);
+      --line-soft: rgba(219, 227, 239, 0.92);
+      --shadow-soft: 0 20px 60px rgba(15, 23, 42, 0.08);
+    }
+
+    body {
+      background:
+        radial-gradient(circle at top left, rgba(15, 79, 168, 0.14), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(22, 163, 74, 0.12), transparent 24%),
+        var(--bg-light);
+    }
+
+    .container {
+      width: min(1180px, calc(100% - 32px));
+      max-width: none;
+      padding: 0;
+    }
+
+    header {
+      padding: 18px 0;
+      background: rgba(244, 247, 251, 0.9);
+      border-bottom: 1px solid rgba(219, 227, 239, 0.8);
+      box-shadow: none;
+      backdrop-filter: blur(14px);
+    }
+
+    .header-content {
+      gap: 1rem;
+    }
+
+    .logo {
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: #111827;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 136px;
+      padding: 0.8rem 1rem;
+      border-radius: 14px;
+      background: #edf4ff;
+      color: var(--primary-dark);
+      box-shadow: 0 8px 22px rgba(15, 79, 168, 0.08);
+    }
+
+    .back-btn:hover {
+      background: #e1eeff;
+    }
+
+    .step-pill {
+      padding: 0.72rem 1rem;
+      border-radius: 999px;
+      background: #e9f9ef;
+      color: var(--accent);
+      font-weight: 800;
+      font-size: 0.88rem;
+    }
+
+    .progress-container {
+      background: transparent;
+      border-bottom: none;
+      margin-bottom: 1.6rem;
+      padding: 1.2rem 0 0;
+    }
+
+    .progress-container .container {
+      padding: 1.2rem 1.4rem;
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid var(--line-soft);
+      box-shadow: 0 16px 44px rgba(15, 23, 42, 0.06);
+    }
+
+    .progress-bar {
+      height: 9px;
+      background: #e8eef7;
+    }
+
+    .progress-steps {
+      gap: 0.8rem;
+    }
+
+    .step {
+      padding: 0.9rem 0.7rem;
+      border-radius: 18px;
+      background: #f7fafe;
+      justify-content: center;
+      font-weight: 700;
+    }
+
+    .step.active {
+      color: var(--primary-dark);
+      background: #eef5ff;
+    }
+
+    .step.completed {
+      color: var(--accent-dark);
+      background: #eefaf2;
+    }
+
+    .builder-layout {
+      gap: 1.4rem;
+      margin-bottom: 1.4rem;
+    }
+
+    .form-section,
+    .preview-section,
+    .templates-section,
+    .payment-section,
+    .modal-content {
+      background: var(--surface-soft);
+      border: 1px solid var(--line-soft);
+      border-radius: 28px;
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(10px);
+    }
+
+    .form-section,
+    .preview-section,
+    .templates-section,
+    .payment-section {
+      padding: 1.8rem;
+    }
+
+    .experience-item,
+    .education-item {
+      border-radius: 20px;
+      border: 1px solid #deebfb;
+      background: linear-gradient(180deg, rgba(248, 251, 255, 0.9), rgba(255, 255, 255, 0.98));
+    }
+
+    input,
+    textarea,
+    select {
+      border-radius: 14px;
+      border-color: #d9e4f2;
+      background: #fbfdff;
+    }
+
+    .add-button,
+    .btn {
+      border-radius: 14px;
+      font-weight: 700;
+      box-shadow: 0 14px 28px rgba(15, 23, 42, 0.08);
+    }
+
+    .btn-secondary {
+      background: #eef4fb;
+      color: var(--primary-dark);
+    }
+
+    .btn-secondary:hover {
+      background: #e1ecf8;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+    }
+
+    footer[style] {
+      display: none;
+    }
+
+    .site-footer {
+      border-top: 1px solid rgba(219, 227, 239, 0.92);
+      background: rgba(255, 255, 255, 0.76);
+      padding: 1.5rem 0 2rem;
+      color: var(--text-secondary);
+    }
+
+    .site-footer-inner {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .site-footer a {
+      color: var(--primary-dark);
+      text-decoration: none;
+    }
+
+    @media (max-width: 768px) {
+      .header-content,
+      .site-footer-inner {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .back-btn,
+      .step-pill {
+        width: 100%;
+        text-align: center;
+      }
+    }
   </style>
 </head>
 <body>
@@ -1164,7 +1374,7 @@
       <div class="header-content">
         <a href="index.html" class="back-btn">&larr; Back to Home</a>
         <div class="logo"><strong>Gulf</strong> CV Builder</div>
-        <div style="font-size: 0.9rem; color: var(--text-secondary);">Step <span id="currentStep">1</span> of 5</div>
+        <div class="step-pill">Step <span id="currentStep">1</span> of 5</div>
       </div>
     </div>
   </header>
@@ -2190,6 +2400,20 @@
     // Initialize on load
     window.addEventListener('load', initializeForm);
   </script>
+
+  <footer class="site-footer">
+    <div class="site-footer-inner">
+      <div>
+        <p><strong>IOC Global Services</strong></p>
+        <p>Bridge Square Complex, Bridge Rd, Balmatta, Mangaluru, Karnataka 575003</p>
+      </div>
+      <div style="text-align: right; font-size: 0.9rem;">
+        <p>+91 8050010978 | 8660147830 | 8867711688</p>
+        <p><a href="mailto:hr@theglobalservices.in">hr@theglobalservices.in</a></p>
+        <p>&copy; 2026 <strong>Gulf</strong> CV Expert. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
 
   <!-- FOOTER -->
   <footer style="background: linear-gradient(135deg, #0f4fa8 0%, #0a3a7a 100%); color: white; margin-top: 3rem; padding: 2rem 0; border-top: 1px solid rgba(255,255,255,0.1);">

@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const cors = require('cors');
 const PDFDocument = require('pdfkit');
+const zlib = require('zlib');
 
 // Try to load optional dependencies
 let pdfParse;
@@ -48,18 +49,8 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-  const allowedMimes = [
-    'application/pdf',
-    'text/plain',
-    'application/msword',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-  ];
-
-  if (allowedMimes.includes(file.mimetype) || file.originalname.match(/\.(pdf|txt|doc|docx)$/i)) {
-    cb(null, true);
-  } else {
-    cb(new Error('Invalid file format. Only PDF, TXT, DOC, DOCX allowed.'));
-  }
+  // Accept any uploaded file type and decide how much text can be extracted later.
+  cb(null, true);
 };
 
 const upload = multer({
@@ -72,13 +63,292 @@ const upload = multer({
 // FILE PARSING FUNCTIONS
 // =========================
 
+const PDF_PARSE_VERSIONS = ['v2.0.550', 'v1.10.100', 'v1.10.88', 'v1.9.426'];
+
+function decodePdfByteString(buffer) {
+  if (!buffer || buffer.length === 0) {
+    return '';
+  }
+
+  if (
+    buffer.length >= 2
+    && buffer[0] === 0xFE
+    && buffer[1] === 0xFF
+    && buffer.length % 2 === 0
+  ) {
+    let result = '';
+    for (let index = 2; index < buffer.length; index += 2) {
+      result += String.fromCharCode((buffer[index] << 8) | buffer[index + 1]);
+    }
+    return result;
+  }
+
+  return buffer.toString('latin1');
+}
+
+function decodePdfEscapedString(value) {
+  let result = '';
+
+  for (let index = 0; index < value.length; index += 1) {
+    const character = value[index];
+    if (character !== '\\') {
+      result += character;
+      continue;
+    }
+
+    const nextCharacter = value[index + 1];
+    if (!nextCharacter) {
+      break;
+    }
+
+    switch (nextCharacter) {
+      case 'n':
+        result += '\n';
+        index += 1;
+        break;
+      case 'r':
+        result += '\r';
+        index += 1;
+        break;
+      case 't':
+        result += '\t';
+        index += 1;
+        break;
+      case 'b':
+        result += '\b';
+        index += 1;
+        break;
+      case 'f':
+        result += '\f';
+        index += 1;
+        break;
+      case '(':
+      case ')':
+      case '\\':
+        result += nextCharacter;
+        index += 1;
+        break;
+      case '\n':
+        index += 1;
+        break;
+      case '\r':
+        index += value[index + 2] === '\n' ? 2 : 1;
+        break;
+      default:
+        if (/[0-7]/.test(nextCharacter)) {
+          let octalValue = nextCharacter;
+          let octalIndex = index + 2;
+
+          while (
+            octalIndex < value.length
+            && octalValue.length < 3
+            && /[0-7]/.test(value[octalIndex])
+          ) {
+            octalValue += value[octalIndex];
+            octalIndex += 1;
+          }
+
+          result += String.fromCharCode(Number.parseInt(octalValue, 8));
+          index = octalIndex - 1;
+        } else {
+          result += nextCharacter;
+          index += 1;
+        }
+    }
+  }
+
+  return result;
+}
+
+function decodePdfToken(token) {
+  if (!token) {
+    return '';
+  }
+
+  if (token.startsWith('(') && token.endsWith(')')) {
+    return decodePdfEscapedString(token.slice(1, -1));
+  }
+
+  if (token.startsWith('<') && token.endsWith('>')) {
+    const hexValue = token
+      .slice(1, -1)
+      .replace(/[^0-9A-Fa-f]/g, '');
+
+    if (!hexValue) {
+      return '';
+    }
+
+    const paddedHexValue = hexValue.length % 2 === 0 ? hexValue : `${hexValue}0`;
+    return decodePdfByteString(Buffer.from(paddedHexValue, 'hex'));
+  }
+
+  return '';
+}
+
+function extractPdfTextOperators(content) {
+  const collected = [];
+  const operatorPattern = /(\((?:\\.|[^\\()])*\)|<[\dA-Fa-f\s]+>)\s*Tj|\[((?:[\s\S]*?))\]\s*TJ|(\((?:\\.|[^\\()])*\))\s*['"]/g;
+
+  let match;
+  while ((match = operatorPattern.exec(content)) !== null) {
+    if (match[1]) {
+      const singleToken = safeText(decodePdfToken(match[1]));
+      if (singleToken) {
+        collected.push(singleToken);
+      }
+      continue;
+    }
+
+    if (match[2]) {
+      const arrayTokens = match[2].match(/\((?:\\.|[^\\()])*\)|<[\dA-Fa-f\s]+>/g) || [];
+      const arrayText = safeText(arrayTokens.map((token) => decodePdfToken(token)).join(' '));
+      if (arrayText) {
+        collected.push(arrayText);
+      }
+      continue;
+    }
+
+    if (match[3]) {
+      const quotedToken = safeText(decodePdfToken(match[3]));
+      if (quotedToken) {
+        collected.push(quotedToken);
+      }
+    }
+  }
+
+  return safeText(collected.join('\n'));
+}
+
+function salvagePdfTextFromBuffer(fileBuffer) {
+  const binaryContent = fileBuffer.toString('latin1');
+  const streamPattern = /(<<[\s\S]*?>>)?\s*stream\r?\n([\s\S]*?)\r?\nendstream/g;
+  const extractedChunks = [];
+  let match;
+
+  while ((match = streamPattern.exec(binaryContent)) !== null) {
+    const dictionary = match[1] || '';
+    const streamBuffer = Buffer.from(match[2], 'latin1');
+
+    const candidates = [streamBuffer];
+    if (/FlateDecode/.test(dictionary)) {
+      try {
+        candidates.unshift(zlib.inflateSync(streamBuffer));
+      } catch (inflateError) {
+        try {
+          candidates.unshift(zlib.inflateRawSync(streamBuffer));
+        } catch (inflateRawError) {
+          // Ignore and keep the raw stream candidate below.
+        }
+      }
+    }
+
+    candidates.forEach((candidateBuffer) => {
+      const extractedText = extractPdfTextOperators(candidateBuffer.toString('latin1'));
+      if (extractedText) {
+        extractedChunks.push(extractedText);
+      }
+    });
+  }
+
+  return safeText(extractedChunks.join('\n\n'));
+}
+
+async function parsePDFWithVersion(fileBuffer, version) {
+  const PDFJS = require(`pdf-parse/lib/pdf.js/${version}/build/pdf.js`);
+  PDFJS.disableWorker = true;
+
+  const loadingTask = PDFJS.getDocument({
+    data: new Uint8Array(fileBuffer),
+    stopAtErrors: false,
+    nativeImageDecoderSupport: 'none'
+  });
+
+  const pdfDocument = await (loadingTask.promise || loadingTask);
+  const pageCount = pdfDocument.numPages || 0;
+  const lines = [];
+
+  for (let pageIndex = 1; pageIndex <= pageCount; pageIndex += 1) {
+    try {
+      const page = await pdfDocument.getPage(pageIndex);
+      const textContent = await page.getTextContent({
+        normalizeWhitespace: true,
+        disableCombineTextItems: false
+      });
+
+      let lastY;
+      let pageText = '';
+
+      for (const item of textContent.items || []) {
+        const itemText = safeText(item?.str);
+        if (!itemText) {
+          continue;
+        }
+
+        if (lastY === undefined || lastY === item.transform?.[5]) {
+          pageText += itemText;
+        } else {
+          pageText += `\n${itemText}`;
+        }
+
+        lastY = item.transform?.[5];
+      }
+
+      if (safeText(pageText)) {
+        lines.push(pageText);
+      }
+    } catch (pageError) {
+      // Ignore individual page errors and continue with the remaining pages.
+    }
+  }
+
+  if (typeof pdfDocument.destroy === 'function') {
+    await pdfDocument.destroy();
+  }
+
+  return safeText(lines.join('\n\n'));
+}
+
 async function parsePDF(filePath) {
   if (!pdfParse) {
     throw new Error('PDF parsing not available. Run: npm install pdf-parse');
   }
+
   const fileBuffer = fs.readFileSync(filePath);
-  const data = await pdfParse(fileBuffer);
-  return data.text;
+  const parsingErrors = [];
+
+  try {
+    const data = await pdfParse(fileBuffer);
+    const parsedText = safeText(data?.text);
+    if (parsedText) {
+      return parsedText;
+    }
+  } catch (error) {
+    parsingErrors.push(error.message);
+  }
+
+  for (const version of PDF_PARSE_VERSIONS) {
+    try {
+      const parsedText = await parsePDFWithVersion(fileBuffer, version);
+      if (parsedText) {
+        console.warn(`Recovered PDF text using pdf.js ${version}`);
+        return parsedText;
+      }
+    } catch (error) {
+      parsingErrors.push(`${version}: ${error.message}`);
+    }
+  }
+
+  const salvagedText = salvagePdfTextFromBuffer(fileBuffer);
+  if (salvagedText) {
+    console.warn('Recovered PDF text using raw stream fallback');
+    return salvagedText;
+  }
+
+  throw new Error(
+    `Could not extract readable text from this PDF. ${
+      parsingErrors[0] || 'The file may be scanned, damaged, or protected.'
+    }`
+  );
 }
 
 async function parseDOCX(filePath) {
@@ -93,8 +363,103 @@ function parseTXT(filePath) {
   return fs.readFileSync(filePath, 'utf-8');
 }
 
+const TEXT_LIKE_EXTENSIONS = new Set([
+  '.txt', '.text', '.csv', '.tsv', '.md', '.markdown', '.rtf',
+  '.html', '.htm', '.xml', '.svg', '.json', '.yaml', '.yml', '.ini',
+  '.log', '.sql', '.js', '.ts', '.css'
+]);
+
+const IMAGE_EXTENSIONS = new Set([
+  '.png', '.jpg', '.jpeg', '.gif', '.bmp', '.webp', '.tif', '.tiff', '.heic'
+]);
+
+function getFileExtension(fileName) {
+  return path.extname(String(fileName || '').toLowerCase());
+}
+
+function normalizeExtractedText(text) {
+  return safeText(String(text || '').replace(/`n/g, '\n'));
+}
+
+function stripHtmlTags(text) {
+  return String(text || '')
+    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<\/(p|div|li|h[1-6]|tr|section|article)>/gi, '\n')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'");
+}
+
+function stripRtfMarkup(text) {
+  return String(text || '')
+    .replace(/\\par[d]?/g, '\n')
+    .replace(/\\tab/g, ' ')
+    .replace(/\\'[0-9a-fA-F]{2}/g, ' ')
+    .replace(/\\[a-z]+-?\d* ?/gi, ' ')
+    .replace(/[{}]/g, ' ');
+}
+
+function looksLikeReadableText(text) {
+  const value = normalizeExtractedText(text);
+  if (value.length < 24) {
+    return false;
+  }
+
+  const wordMatches = value.match(/[A-Za-z]{2,}/g) || [];
+  return wordMatches.length >= 4;
+}
+
+function extractReadableTextFromBuffer(fileBuffer) {
+  const candidates = [
+    fileBuffer.toString('utf8'),
+    fileBuffer.toString('utf16le'),
+    fileBuffer.toString('latin1')
+  ];
+
+  for (const candidate of candidates) {
+    if (looksLikeReadableText(candidate)) {
+      return normalizeExtractedText(candidate);
+    }
+  }
+
+  const latinText = fileBuffer.toString('latin1');
+  const sequences = latinText.match(/[A-Za-z0-9@&()\/+.,:\- ]{4,}/g) || [];
+  const collapsed = sequences
+    .map((sequence) => sequence.trim())
+    .filter((sequence) => /[A-Za-z]{2,}/.test(sequence))
+    .join('\n');
+
+  if (looksLikeReadableText(collapsed)) {
+    return normalizeExtractedText(collapsed);
+  }
+
+  return '';
+}
+
+function parseTextLikeFile(filePath, extension) {
+  const rawText = fs.readFileSync(filePath, 'utf-8');
+
+  if (extension === '.rtf') {
+    return normalizeExtractedText(stripRtfMarkup(rawText));
+  }
+
+  if (extension === '.html' || extension === '.htm' || extension === '.xml') {
+    return normalizeExtractedText(stripHtmlTags(rawText));
+  }
+
+  return normalizeExtractedText(rawText);
+}
+
 async function extractTextFromFile(filePath, mimetype, originalName) {
   const lowerName = String(originalName || '').toLowerCase();
+  const extension = getFileExtension(lowerName);
+  const fileBuffer = fs.readFileSync(filePath);
 
   try {
     if (mimetype === 'application/pdf' || lowerName.endsWith('.pdf')) {
@@ -108,16 +473,30 @@ async function extractTextFromFile(filePath, mimetype, originalName) {
       return await parseDOCX(filePath);
     }
 
-    if (mimetype === 'text/plain' || lowerName.endsWith('.txt')) {
-      return parseTXT(filePath);
+    if (mimetype === 'text/plain' || TEXT_LIKE_EXTENSIONS.has(extension)) {
+      const parsedText = parseTextLikeFile(filePath, extension);
+      if (parsedText) {
+        return parsedText;
+      }
     }
 
     if (mimetype === 'application/msword' || lowerName.endsWith('.doc')) {
-      // Basic text extraction fallback for legacy .doc files.
-      return parseTXT(filePath);
+      const docFallbackText = extractReadableTextFromBuffer(fileBuffer);
+      if (docFallbackText) {
+        return docFallbackText;
+      }
     }
 
-    throw new Error('Unsupported file format');
+    if (String(mimetype || '').startsWith('image/') || IMAGE_EXTENSIONS.has(extension)) {
+      throw new Error('Image files are accepted, but OCR is not available yet for image-only CVs');
+    }
+
+    const genericText = extractReadableTextFromBuffer(fileBuffer);
+    if (genericText) {
+      return genericText;
+    }
+
+    throw new Error('We accepted the file upload, but could not extract readable text from this file');
   } catch (error) {
     throw new Error(`Failed to parse file: ${error.message}`);
   }

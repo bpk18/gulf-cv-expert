@@ -1030,6 +1030,79 @@
         font-size: 1.2rem;
       }
     }
+    /* Unified UI Refresh */
+    body {
+      background:
+        radial-gradient(circle at top left, rgba(15, 79, 168, 0.12), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(22, 163, 74, 0.1), transparent 24%),
+        var(--bg);
+    }
+
+    .header {
+      padding: 18px 0;
+      border-bottom: 1px solid rgba(219, 227, 239, 0.8);
+      box-shadow: none;
+      backdrop-filter: blur(14px);
+      background: rgba(244, 247, 251, 0.9);
+    }
+
+    .header-inner {
+      gap: 1rem;
+    }
+
+    .logo {
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: #111827;
+    }
+
+    .logo strong,
+    .logo span {
+      color: var(--accent);
+    }
+
+    .header-offer {
+      background: #e9f9ef;
+      color: var(--accent-dark);
+      border: 1px solid rgba(22, 163, 74, 0.16);
+      animation: none;
+    }
+
+    footer:not(.site-footer) {
+      display: none;
+    }
+
+    .site-footer {
+      border-top: 1px solid rgba(219, 227, 239, 0.92);
+      background: rgba(255, 255, 255, 0.76);
+      padding: 1.5rem 0 2rem;
+      color: var(--text-secondary);
+    }
+
+    .site-footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .site-footer a {
+      color: var(--primary-dark);
+      text-decoration: none;
+    }
+
+    @media (max-width: 768px) {
+      .header-inner,
+      .site-footer-inner {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .header-offer {
+        text-align: center;
+      }
+    }
   </style>
 </head>
 <body>
@@ -1326,6 +1399,20 @@ Sales Assistant | Supermarket Chain Abu Dhabi | June 2019 – August 2021
 
 
   <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="container site-footer-inner">
+      <div>
+        <p><strong>IOC Global Services</strong></p>
+        <p>Bridge Square Complex, Bridge Rd, Balmatta, Mangaluru, Karnataka 575003</p>
+      </div>
+      <div style="text-align: right;">
+        <p>+91 8050010978 | 8660147830 | 8867711688</p>
+        <p><a href="mailto:hr@theglobalservices.in">hr@theglobalservices.in</a></p>
+        <p>&copy; 2026 <strong>Gulf</strong> CV Expert. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
   <footer>
     <div class="container">
       <div class="footer-content">
